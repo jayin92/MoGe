@@ -15,6 +15,8 @@ import torch.version
 import utils3d
 from huggingface_hub import hf_hub_download
 
+from typing import IO
+
 from ..utils.geometry_torch import normalized_view_plane_uv, recover_focal_shift, gaussian_blur_2d
 from .utils import wrap_dinov2_attention_with_sdpa, wrap_module_with_gradient_checkpointing, unwrap_module_with_gradient_checkpointing
 from ..utils.tools import timeit
@@ -218,7 +220,7 @@ class MoGeModel(nn.Module):
         - A new instance of `MoGe` with the parameters loaded from the checkpoint.
         """
         if Path(pretrained_model_name_or_path).exists():
-            checkpoint = torch.load(pretrained_model_name_or_path, map_location='cpu', weights_only=True)
+            checkpoint = torch.load(pretrained_model_name_or_path, map_location='cpu')#, weights_only=True)
         else:
             cached_checkpoint_path = hf_hub_download(
                 repo_id=pretrained_model_name_or_path,
@@ -226,7 +228,7 @@ class MoGeModel(nn.Module):
                 filename="model.pt",
                 **hf_kwargs
             )
-            checkpoint = torch.load(cached_checkpoint_path, map_location='cpu', weights_only=True)
+            checkpoint = torch.load(cached_checkpoint_path, map_location='cpu') #, weights_only=True)
         model_config = checkpoint['model_config']
         if model_kwargs is not None:
             model_config.update(model_kwargs)

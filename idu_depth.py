@@ -29,9 +29,9 @@ class MoGeIDU:
         torch.cuda.empty_cache()
 
     @torch.no_grad()
-    def run(self, refined_imgs: List[PILImage]) -> List[np.ndarray]:
+    def run(self, refined_imgs: List[PILImage], pbar=True) -> List[np.ndarray]:
         depths = []
-        for idx, img in enumerate(tqdm(refined_imgs, desc=f"Generate depth maps to {self.save_path}")):
+        for idx, img in enumerate(tqdm(refined_imgs, desc=f"Generate depth maps to {self.save_path}", disable=not pbar)):
             img_tensor = tvt.ToTensor()(img).to(self.device)
             output = self.model.infer(img_tensor, fov_x=self.fov_x)
             depth = output['depth'].cpu().numpy()

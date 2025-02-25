@@ -21,6 +21,7 @@ class MoGeIDU:
         self.save_path = save_path
         self.device = device
         self.model = MoGeModel.from_pretrained("Ruicheng/moge-vitl").to(device).eval()
+        self.model.output_mask = True
         self.fov_x = fov_x
         os.makedirs(save_path, exist_ok=True)
     
@@ -34,6 +35,7 @@ class MoGeIDU:
         for idx, img in enumerate(tqdm(refined_imgs, desc=f"Generate depth maps to {self.save_path}", disable=not pbar)):
             img_tensor = tvt.ToTensor()(img).to(self.device)
             output = self.model.infer(img_tensor, fov_x=self.fov_x)
+            assert 'mask' in output, "Model output does not contain mask"
             depth = output['depth'].cpu().numpy()
             cv2.imwrite(os.path.join(self.save_path, '{0:05d}'.format(idx) + ".exr"), depth, [cv2.IMWRITE_EXR_TYPE, cv2.IMWRITE_EXR_TYPE_FLOAT])
             depths.append(depth)

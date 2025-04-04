@@ -26,7 +26,13 @@ class MoGeIDU:
         os.makedirs(save_path, exist_ok=True)
     
     def __del__(self):
-        del self.model
+        if self.model is not None:
+            try:
+                self.model.to("cpu")  # Move to CPU before deleting
+                del self.model
+            except Exception as e:
+                print(f"Error during model cleanup: {e}")
+
         torch.cuda.empty_cache()
 
     @torch.no_grad()
@@ -39,5 +45,6 @@ class MoGeIDU:
             depth = output['depth'].cpu().numpy()
             cv2.imwrite(os.path.join(self.save_path, '{0:05d}'.format(idx) + ".exr"), depth, [cv2.IMWRITE_EXR_TYPE, cv2.IMWRITE_EXR_TYPE_FLOAT])
             depths.append(depth)
+            del output
         
         return depths

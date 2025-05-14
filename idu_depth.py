@@ -43,7 +43,7 @@ class MoGeIDU:
             output = self.model.infer(img_tensor, fov_x=self.fov_x)
             assert 'mask' in output, "Model output does not contain mask"
             depth = output['depth'].cpu().numpy()
-            cv2.imwrite(os.path.join(self.save_path, '{0:05d}'.format(idx) + ".exr"), depth, [cv2.IMWRITE_EXR_TYPE, cv2.IMWRITE_EXR_TYPE_FLOAT])
+            # cv2.imwrite(os.path.join(self.save_path, '{0:05d}'.format(idx) + ".exr"), depth, [cv2.IMWRITE_EXR_TYPE, cv2.IMWRITE_EXR_TYPE_FLOAT])
             depths.append(depth)
             del output
         
